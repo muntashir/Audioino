@@ -1,7 +1,6 @@
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 
-const int analogInPin = A0;
 const int analogOutPin = 6;
 
 int audioIn = 0;     
@@ -31,7 +30,6 @@ void setup() {
 }
 
 void loop() {
-  audioIn = ADCH;
-  audioOut = map(audioIn, 90, 210, 0, 255);
-  analogWrite(analogOutPin, audioOut);
+  //ADCH reads from A0
+  analogWrite(analogOutPin, ADCH);
 }
