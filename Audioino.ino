@@ -3,8 +3,7 @@
 
 const int analogOutPin = 6;
 
-int audioIn = 0;     
-int audioOut = 0;    
+int signal = 0;       
 
 void setup() {  
   //Set ADC parameters
@@ -31,5 +30,6 @@ void setup() {
 
 void loop() {
   //ADCH reads from A0
-  analogWrite(analogOutPin, ADCH);
+  signal = ADCH;
+  analogWrite(analogOutPin, signal);
 }
