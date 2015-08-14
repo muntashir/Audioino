@@ -1,19 +1,25 @@
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 
-const int analogInRight = A0;
-const int analogInLeft = A1;  
-const int analogOutRight = 6;
-const int analogOutLeft = 5;
+const int analogInPin = A0;
+const int analogOutPin = 6;
 
 int audioIn = 0;     
 int audioOut = 0;    
 
 void setup() {  
-  //Set ADC prescale to 16 (77 kHz sampling)
-  sbi(ADCSRA, ADPS2);
-  cbi(ADCSRA, ADPS1);
+  //Set ADC parameters
+  ADCSRA = 0;
+  cbi(ADCSRA, ADPS2);
+  sbi(ADCSRA, ADPS1);
   cbi(ADCSRA, ADPS0);
+  
+  sbi(ADCSRA, ADATE);
+  sbi(ADCSRA, ADEN);
+  sbi(ADCSRA, ADSC);
+  
+  sbi(ADMUX, REFS0);
+  sbi(ADMUX, ADLAR);
 
   //Set pins 5 and 6 to Fast PWM at 62.5 kHz
   TCCR0B = 0;
@@ -25,7 +31,7 @@ void setup() {
 }
 
 void loop() {
-  audioIn = (analogRead(analogInRight));
-  audioOut = map(audioIn, 300, 800, 0, 255);
-  analogWrite(analogOutRight, audioOut);
+  audioIn = ADCH;
+  audioOut = map(audioIn, 90, 210, 0, 255);
+  analogWrite(analogOutPin, audioOut);
 }
