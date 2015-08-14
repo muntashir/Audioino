@@ -11,9 +11,9 @@ int audioOut = 0;
 
 void setup() {  
   //Set ADC prescale to 16 (77 kHz sampling)
-  cbi(ADCSRA, ADPS2);
-  sbi(ADCSRA, ADPS1);
-  sbi(ADCSRA, ADPS0);
+  sbi(ADCSRA, ADPS2);
+  cbi(ADCSRA, ADPS1);
+  cbi(ADCSRA, ADPS0);
 
   //Set pins 5 and 6 to Fast PWM at 62.5 kHz
   TCCR0B = 0;
@@ -25,7 +25,7 @@ void setup() {
 }
 
 void loop() {
-  audioIn = (analogRead(analogInRight) + analogRead(analogInLeft)) / 2;
-  audioOut = map(audioIn, 0, 1023, 0, 255);
+  audioIn = (analogRead(analogInRight));
+  audioOut = map(audioIn, 300, 800, 0, 255);
   analogWrite(analogOutRight, audioOut);
 }
