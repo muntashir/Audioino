@@ -3,7 +3,9 @@
 
 const int analogOutPin = 6;
 
-int signal = 0;       
+int signal = 0; 
+int buffer[512];
+int index = 0;
 
 void setup() {  
   //Set ADC parameters
@@ -26,10 +28,27 @@ void setup() {
   sbi(TCCR0A, COM0B1); 
   sbi(TCCR0A, WGM01); 
   sbi(TCCR0A, WGM00); 
+  
+  int i;
+  for (i = 0; i < 512; i +=1)
+  {
+    buffer[i] = 0;
+  }
 }
 
 void loop() {
   //ADCH reads from A0
   signal = ADCH;
+  buffer[index] = signal;
+  
+  int delayIndex = index - 510;
+  if (delayIndex < 0) {
+    delayIndex += 512;
+  }
+  
+  //Output
+  signal = (4 * buffer[delayIndex] + 6 * signal) / 10;
   analogWrite(analogOutPin, signal);
+  
+  index = (index + 1) % 512;
 }
