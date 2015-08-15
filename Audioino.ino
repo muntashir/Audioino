@@ -1,10 +1,11 @@
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#define BUFFER_LENGTH 512
 
 const int analogOutPin = 6;
 
 int signal = 0; 
-int buffer[512];
+int delayBuffer[BUFFER_LENGTH];
 int index = 0;
 
 void setup() {  
@@ -29,26 +30,26 @@ void setup() {
   sbi(TCCR0A, WGM01); 
   sbi(TCCR0A, WGM00); 
   
-  int i;
-  for (i = 0; i < 512; i +=1)
-  {
-    buffer[i] = 0;
-  }
+  memset(delayBuffer, 0, sizeof(delayBuffer));
 }
 
 void loop() {
   //ADCH reads from A0
   signal = ADCH;
-  buffer[index] = signal;
+  analogWrite(analogOutPin, delaySignal(signal));
+}
+
+int delaySignal(int input) {
+  int output = 0;
+  
+  delayBuffer[index] = input;
   
   int delayIndex = index - 510;
   if (delayIndex < 0) {
-    delayIndex += 512;
+    delayIndex += BUFFER_LENGTH;
   }
   
-  //Output
-  signal = (4 * buffer[delayIndex] + 6 * signal) / 10;
-  analogWrite(analogOutPin, signal);
-  
-  index = (index + 1) % 512;
+  output = (2 * delayBuffer[delayIndex] + 3 * signal) / 5;
+  index = (index + 1) % BUFFER_LENGTH;
+  return output;
 }
